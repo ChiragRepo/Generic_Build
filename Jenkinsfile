@@ -13,7 +13,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sudo sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=/bin/Release/JenkinsXMLParser'
+                mkdir /bin/Release/JenkinsXMLParser
+                sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=/bin/Release/JenkinsXMLParser'
 
 
             }
