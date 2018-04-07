@@ -4,8 +4,9 @@ pipeline {
     stages {
 
         stage('checkout code') {
-            git pull 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
-            //sh 'git clean -fdx; sleep 4;'
+            steps{
+                git pull 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
+            }
         }
 
         stage('Build') {
