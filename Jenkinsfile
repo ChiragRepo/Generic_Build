@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release'
-                sh 'mkdir /bin/Release/Test'
+                sh 'mkdir Test'
             }
         }
         stage('Test') {
