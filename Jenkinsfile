@@ -5,7 +5,8 @@ pipeline {
 
         stage('checkout code') {
             steps{
-                git pull 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
+                //git pull 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
+                git url: 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
             }
         }
 
