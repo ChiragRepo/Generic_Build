@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                'xbuild  JenkinsXMLParser.sln /p:Configuration=Release'
+                sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release'
 
             }
         }
