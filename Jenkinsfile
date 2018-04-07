@@ -5,7 +5,7 @@ pipeline {
 
         stage('checkout code') {
             git url: 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
-            sh 'git clean -fdx; sleep 4;'
+            //sh 'git clean -fdx; sleep 4;'
         }
 
         stage('Build') {
