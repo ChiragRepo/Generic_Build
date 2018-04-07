@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=bin/Release/JenkinsXMLParser'
-                sh 'zip zipFile: JenkinsXMLParser.zip, archive: false, dir: bin/Release/JenkinsXMLParser'
+                sh 'zip JenkinsXMLParser.zip, archive: false, dir: bin/Release/JenkinsXMLParser'
             }
         }
         stage('Test') {
