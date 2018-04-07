@@ -13,9 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=/bin/Release/JenkinsXMLParser'
-
-
+                sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=/bin/Release'
             }
         }
         stage('Test') {
