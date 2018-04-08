@@ -13,10 +13,9 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                def buildnum = ${env.BUILD_NUMBER}
-                echo buildnum
+                echo ${env.BUILD_NUMBER}
                 sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=bin/Release/JenkinsXMLParser'
-                sh 'zip JenkinsXMLParser + buildnum.zip archive: false dir: bin/Release/JenkinsXMLParser'
+                sh 'zip JenkinsXMLParser + ${env.BUILD_NUMBER}.zip archive: false dir: bin/Release/JenkinsXMLParser'
                 //sh 'curl -v -u admin:admin123 --upload-file JenkinsXMLParser.zip  http://10.0.75.1:8081/repository/jenkinsxmlparser/JenkinsXMLParser.zip'
             }
         }
