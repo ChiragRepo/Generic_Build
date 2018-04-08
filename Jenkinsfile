@@ -3,9 +3,13 @@ pipeline {
 
     stages {
 
+        stage('Clean WorkSpace') {
+            steps{
+                cleanWs()
+            }
+        }
         stage('checkout code') {
             steps{
-                cleanws
                 git url: 'https://github.com/ChiragRepo/JenkinsXMLParser.git'
             }
         }
