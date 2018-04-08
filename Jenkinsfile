@@ -14,10 +14,8 @@ pipeline {
             steps {
                 echo 'Building..'
                 echo env.BUILD_NUMBER
-                filename = JenkinsXMLParser + env.BUILD_NUMBER.zip
-                echo filename
                 sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=bin/Release/JenkinsXMLParser'
-                sh 'zip JenkinsXMLParser + env.BUILD_NUMBER.zip archive: false dir: bin/Release/JenkinsXMLParser'
+                sh 'zip JenkinsXMLParser + ${env.BUILD_NUMBER}.zip archive: false dir: bin/Release/JenkinsXMLParser'
                 //sh 'curl -v -u admin:admin123 --upload-file JenkinsXMLParser.zip  http://10.0.75.1:8081/repository/jenkinsxmlparser/JenkinsXMLParser.zip'
             }
         }
