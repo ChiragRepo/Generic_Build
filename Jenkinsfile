@@ -14,7 +14,8 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'xbuild  JenkinsXMLParser.sln /p:Configuration=Release /p:OutputPath=bin/Release/JenkinsXMLParser'
-                sh 'zip JenkinsXMLParser.zip, archive: false, dir: bin/Release/JenkinsXMLParser'
+                sh 'nuget config -Set repositoryPath=bin/Release/JenkinsXMLParser'
+                sh 'nuget pack -IncludeReferencedProjects -properties Configuration=Release'
             }
         }
         stage('Test') {
