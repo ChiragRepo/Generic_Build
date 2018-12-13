@@ -1,0 +1,43 @@
+import groovy.json.JsonSlurper
+
+try {
+    timestamps {
+        node('API_Agents') {
+            otherjson  = new JsonSlurper().parseText(params.payload)
+            branchname = otherjson.ref.split("/")[-1]
+            gitrepourl = otherjson.repository.clone_url
+            println branchname
+            print gitrepourl
+            
+            //cleanWs()
+            properties([
+                    parameters([
+                            string(
+                                    defaultValue: '',
+                                    description: 'github repo url',
+                                    name: 'gitrepourl'
+                            ),
+                            string(
+                                    defaultValue: '',
+                                    description: 'github branch',
+                                    name: 'branchname'
+                            ),
+                            string(
+                                    defaultValue: '',
+                                    description: 'GitHub code committer email address',
+                                    name: 'payload'
+                            )
+                    ])
+            ])
+
+            stage('GetCodeFromRep')
+            {
+                git credentialsId: "GHE", url: gitrepourl, branch: branchname
+
+            }
+        }
+    }
+}
+catch (Exception err) {
+
+}
