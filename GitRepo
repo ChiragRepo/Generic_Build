@@ -1,5 +1,7 @@
 import groovy.json.JsonSlurper
 
+//Webhook url need to go in jenkins
+// https://<jenkinsID:Jenkins token@Jenkinservername:port/job/JobName/buildWithParameters?token=<token from job>
 try {
     timestamps {
         node('API_Agents') {
