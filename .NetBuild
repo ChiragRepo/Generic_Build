@@ -1,0 +1,98 @@
+import hudson.model.*
+import groovy.io.FileType
+
+try
+{
+    node('Test_Agents')
+            {
+                parameters{
+                    string(defaultValue: '',description: 'github repo url',name: 'gitrepourl')
+                    string(defaultValue: '',description: 'github branch',name: 'branchname')
+                }
+
+                stage("checkout build code") 
+                {                    
+                       checkout scm
+                       stash 'source'
+                        bat "start cmd.exe /c mkdir tools"
+                        bat "start cmd.exe /c move /Y Wix_Proj tools"
+                }
+
+                stage('checkout code')
+                        {
+                            git credentialsId: "Test-GHE", url: params.gitrepourl,  branch: params.branchname
+                        }
+
+                stage('Build Folder')
+                        {
+                            //Create build output folder
+                            bat "start cmd.exe /c mkdir build_output\\" + BUILD_NUMBER
+                        }
+
+                stage('Build')
+                        {
+                            echo 'Building..'
+                            echo BUILD_NUMBER
+                            // Compile Code
+                            def files = findFiles(glob: '**/*.sln')
+                            for (String item : files) {
+                                echo """${item}"""
+                                if ("${item}".contains("UnitTest"))
+                                {
+                                    echo "Do not compile Unit Test Solution"
+                                }                                
+                                else
+                                {
+                                    bat "\"${tool 'MSBuild'}\" ${item} /p:Configuration=Release /p:Platform=\"Any CPU\" /p:outdir=" + WORKSPACE + "\\build_output\\" + BUILD_NUMBER
+                                    bat "start cmd.exe /c move /Y build_output\\" + BUILD_NUMBER + "\\_PublishedWebsites\\RAHelper build_output\\" + BUILD_NUMBER + "\\_PublishedWebsites\\RAWEBApp"
+
+                                }
+                            }
+                        }
+
+                stage('Package Artifacts')
+                        {
+                            echo 'Package Artifacts....'
+                            //powershell 'Compress-Archive -Path "build_output\\$env:BUILD_NUMBER\\_PublishedWebsites" -DestinationPath "build_output\\$env:BUILD_NUMBER\\RAWEBApp_$env:BUILD_NUMBER.zip"'
+                            def files = findFiles(glob: 'tools/Wix_Proj/*.wixproj')
+                             echo """${files}"""
+                             for (String item : files) 
+                             {
+                                echo """${item}"""
+                                bat "\"${tool 'MSBuild'}\"  ${item}  /p:BuildOutPut=" + WORKSPACE + "\\build_output\\" + BUILD_NUMBER + "\\_PublishedWebsites " + "/p:FragmentsOutPut=" + WORKSPACE + "\\tools\\Wix_Proj\\Fragments " + " /p:Version=" + "1.0.0." + BUILD_NUMBER +  " /p:OutputPath=" + WORKSPACE + "\\build_output\\" + BUILD_NUMBER
+                             }
+                        }
+
+                stage('Upload Artifacts')
+                        {
+                            echo 'Uploading Artifacts....'
+                            // Upload zip file into Nexus                            
+                            def files = findFiles(glob: "build_output/" + BUILD_NUMBER + "/*.msi")
+                             echo """${files}"""
+                             for (String item : files) 
+                             {
+                                echo """${item}"""
+                                withCredentials([usernamePassword(credentialsId: "Test-Nexus3", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) 
+                                {                                       
+                                    bat "mvn deploy:deploy-file -Dusername=" + USERNAME + "-Dpassword=" + PASSWORD + " -Dversion=" + "1.0.0." + BUILD_NUMBER + " -DartifactId=Test_RAWEBAPP_WebSetup -DgroupId=Test -Dpackaging=msi -DrepositoryId=nexus -Durl=" + env.nexus3_url + "//repository//Test-RAWA/ -Dfile=" + WORKSPACE + "\\${item} -DskipTests=true"
+                                }
+                             }                            
+                        }
+                
+                 stage('Clean up build folder')
+                     {
+                            //Clean build output folder
+                            bat "start cmd.exe /c rmdir build_output\\" + BUILD_NUMBER + "/S /Q"
+                      }  
+                                      
+            }
+}
+catch (exc)
+{
+    err = caughtError
+    echo err
+}
+finally
+{
+    echo "Build Success"
+}
