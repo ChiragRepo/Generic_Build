@@ -87,7 +87,7 @@ try
                                       
             }
 }
-catch (exc)
+catch (c)
 {
     err = caughtError
     echo err
